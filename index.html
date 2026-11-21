@@ -185,7 +185,7 @@ input[type=range] { width: 100%; }
 </style>
 </head>
 <body>
-<audio id="a" preload="metadata" crossorigin="anonymous"></audio>
+<audio id="a" preload="metadata"></audio>
 
 <main>
 <h1>Slowed Player 🎧</h1>
@@ -213,8 +213,9 @@ input[type=range] { width: 100%; }
   </div>
 
   <div class="notice">
-    💡 <b>Search වැඩ නොකළොත්:</b> YouTube URL copy කරලා පහළ box එකට paste කරන්න.<br>
-    🔊 <b>Audio load:</b> Cobalt.tools API (free) use කරනවා.
+    💡 <b>Search fail වුනොත්:</b> Invidious/Piped toggle කරන්න හෝ YouTube URL paste කරන්න.<br>
+    🔊 <b>Audio:</b> Invidious → Cobalt → Piped order එකෙන් try කරනවා (auto-fallback).<br>
+    🌐 <b>VPN use කළොත්</b> success rate වැඩියි (geo-blocks bypass).
   </div>
 </section>
 
@@ -291,10 +292,13 @@ input[type=range] { width: 100%; }
 
 // Invidious public instances (try in order)
 const INVIDIOUS_INSTANCES = [
-  'https://invidious.privacydev.net',
   'https://inv.nadeko.net',
+  'https://invidious.privacydev.net',
+  'https://iv.ggtyler.dev',
   'https://invidious.io.lol',
   'https://invidious.nerdvpn.de',
+  'https://invidious.projectsegfau.lt',
+  'https://yt.artemislena.eu',
 ];
 
 // Piped public instances
@@ -302,10 +306,14 @@ const PIPED_INSTANCES = [
   'https://pipedapi.kavin.rocks',
   'https://pipedapi.adminforge.de',
   'https://pipedapi.darkness.services',
+  'https://piped-api.garudalinux.org',
 ];
 
-// Cobalt for audio stream (no API key needed)
-const COBALT_API = 'https://api.cobalt.tools';
+// Cobalt instances (try multiple)
+const COBALT_INSTANCES = [
+  'https://api.cobalt.tools',
+  'https://cobalt.api.timelessnesses.me',
+];
 
 // LRCLib for lyrics
 const LRCLIB = 'https://lrclib.net/api/search';
@@ -505,7 +513,7 @@ function clearQueue() {
 }
 
 // ============================================================
-//  LOAD SONG via Cobalt API
+//  LOAD SONG — Multi-strategy with fallbacks
 // ============================================================
 async function loadSong(v) {
   currentVideoId = v.id;
@@ -514,78 +522,117 @@ async function loadSong(v) {
   $('thumb').src = v.thumbnail || '';
   $('playbtn').disabled = true;
   lines = []; activeL = -1;
-  setStatus('⏳ Audio stream ගෙනේ…', 'loading');
   renderQueue();
 
-  const ytUrl = `https://www.youtube.com/watch?v=${v.id}`;
-
+  // Strategy 1: Invidious embed URL (no CORS issues)
+  setStatus('⏳ Invidious stream ගෙනේ…', 'loading');
   try {
-    // Try Cobalt API for audio stream
-    const cobaltRes = await fetch(COBALT_API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({
-        url: ytUrl,
-        audioFormat: 'mp3',
-        downloadMode: 'audio',
-        audioBitrate: '128',
-      }),
-      signal: AbortSignal.timeout(15000),
-    });
-
-    if (!cobaltRes.ok) throw new Error(`Cobalt HTTP ${cobaltRes.status}`);
-    const cobaltData = await cobaltRes.json();
-
-    let audioUrl = null;
-    if (cobaltData.status === 'stream' || cobaltData.status === 'redirect') {
-      audioUrl = cobaltData.url;
-    } else if (cobaltData.status === 'tunnel') {
-      audioUrl = cobaltData.url;
-    } else if (cobaltData.url) {
-      audioUrl = cobaltData.url;
-    }
-
-    if (!audioUrl) throw new Error('Cobalt: audio URL නැත');
-
-    setAudioSrc(audioUrl, v);
-
+    await loadViaInvidious(v);
+    return;
   } catch (e) {
-    // Fallback: try Invidious direct audio stream
-    console.warn('Cobalt failed:', e.message, '— trying Invidious audio stream');
-    setStatus('⏳ Alternative source try කරනවා…', 'loading');
-    try {
-      await loadViaInvidious(v);
-    } catch (e2) {
-      setStatus(`❌ Audio load failed: ${e2.message}`, 'error');
-      toast('Audio load නොවිය. URL box try කරන්න.');
-      $('playbtn').disabled = false;
-    }
+    console.warn('Invidious failed:', e.message);
   }
+
+  // Strategy 2: Cobalt API
+  setStatus('⏳ Cobalt API try කරනවා…', 'loading');
+  try {
+    await loadViaCobalt(v);
+    return;
+  } catch (e) {
+    console.warn('Cobalt failed:', e.message);
+  }
+
+  // Strategy 3: Piped API audio stream
+  setStatus('⏳ Piped try කරනවා…', 'loading');
+  try {
+    await loadViaPiped(v);
+    return;
+  } catch (e) {
+    console.warn('Piped failed:', e.message);
+  }
+
+  setStatus('❌ Audio load failed — YouTube URL paste box try කරන්න', 'error');
+  toast('සියලු sources failed. URL paste box use කරන්න.');
+  $('playbtn').disabled = false;
 }
 
 async function loadViaInvidious(v) {
   for (const inst of INVIDIOUS_INSTANCES) {
     try {
       const data = await tryFetch(`${inst}/api/v1/videos/${v.id}?fields=adaptiveFormats,formatStreams`);
-      // Find best audio-only stream
+      // Prefer opus/webm audio-only streams, then mp4a, then mixed streams
       const audioFmts = (data.adaptiveFormats || []).filter(f => f.type?.startsWith('audio/'));
-      const best = audioFmts.sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
-      const fallback = (data.formatStreams || [])[0];
-      const src = best?.url || fallback?.url;
-      if (!src) throw new Error('No audio stream');
-      setAudioSrc(src, v);
+      const best = audioFmts.sort((a, b) => {
+        // Prefer webm/opus for better browser support in audio element
+        const aScore = (a.type?.includes('webm') ? 10 : 0) + ((a.bitrate || 0) / 10000);
+        const bScore = (b.type?.includes('webm') ? 10 : 0) + ((b.bitrate || 0) / 10000);
+        return bScore - aScore;
+      })[0];
+      // Also try format streams (muxed video+audio) as absolute fallback
+      const mixed = (data.formatStreams || []).find(f => f.type?.includes('mp4'));
+      const src = best?.url || mixed?.url;
+      if (!src) throw new Error('No audio URL in response');
+      // Test if the URL is actually reachable with a HEAD request
+      const testRes = await fetch(src, { method: 'HEAD', signal: AbortSignal.timeout(5000) });
+      if (!testRes.ok) throw new Error(`Stream URL returned ${testRes.status}`);
+      setAudioSrc(src, v, inst);
+      return;
+    } catch (e) { /* try next instance */ }
+  }
+  throw new Error('සියලු Invidious instances failed');
+}
+
+async function loadViaCobalt(v) {
+  const ytUrl = `https://www.youtube.com/watch?v=${v.id}`;
+  for (const cobaltBase of COBALT_INSTANCES) {
+    try {
+      const res = await fetch(cobaltBase, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          url: ytUrl,
+          audioFormat: 'mp3',
+          downloadMode: 'audio',
+          audioBitrate: '128',
+          filenameStyle: 'pretty',
+        }),
+        signal: AbortSignal.timeout(12000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const audioUrl = data.url || (data.status === 'picker' && data.picker?.[0]?.url);
+      if (!audioUrl) throw new Error('No URL in response');
+      setAudioSrc(audioUrl, v, 'Cobalt');
+      return;
+    } catch (e) { /* try next */ }
+  }
+  throw new Error('සියලු Cobalt instances failed');
+}
+
+async function loadViaPiped(v) {
+  for (const inst of PIPED_INSTANCES) {
+    try {
+      const data = await tryFetch(`${inst}/streams/${v.id}`);
+      const audioStreams = (data.audioStreams || []).filter(s => s.url);
+      const best = audioStreams.sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
+      if (!best?.url) throw new Error('No audio stream');
+      setAudioSrc(best.url, v, 'Piped');
       return;
     } catch (e) { /* next */ }
   }
-  throw new Error('සියලු sources failed');
+  throw new Error('සියලු Piped instances failed');
 }
 
-function setAudioSrc(url, v) {
+function setAudioSrc(url, v, sourceName) {
   a.src = url;
   a.load();
-  initAudio();
+  // Web Audio API requires crossOrigin — only set if same-origin or CORS-enabled
+  // We'll init audio on first play to avoid CORS errors on load
   a.play()
-    .then(() => setStatus('▶ Playing — ' + (v.title || ''), 'ok'))
+    .then(() => {
+      initAudio();
+      setStatus(`▶ Playing via ${sourceName || 'stream'} — ${v.title || ''}`, 'ok');
+    })
     .catch(err => {
       setStatus('⚠ Autoplay blocked — ▶ press කරන්න', 'loading');
     });
@@ -609,12 +656,16 @@ let audioSourceNode = null;
 
 function initAudio() {
   if (ctx) {
-    // Re-use existing context, just update source if needed
+    // Re-use existing context
+    ctx.resume().catch(() => {});
     return;
   }
-  ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const src = ctx.createMediaElementSource(a);
-  audioSourceNode = src;
+  try {
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // crossOrigin needed for Web Audio API processing
+    a.crossOrigin = 'anonymous';
+    const src = ctx.createMediaElementSource(a);
+    audioSourceNode = src;
   let node = src;
   const FREQS = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
   filters = FREQS.map((f, i) => {
@@ -630,6 +681,12 @@ function initAudio() {
   bassF.connect(dry); bassF.connect(conv); conv.connect(wet);
   dry.connect(ctx.destination); wet.connect(ctx.destination);
   applyFX();
+  } catch(e) {
+    // CORS blocked Web Audio — audio still plays, just without EQ/reverb processing
+    console.warn('Web Audio API init failed (CORS):', e.message);
+    ctx = null;
+    toast('ℹ EQ/Reverb unavailable (CORS). Audio plays normally.');
+  }
 }
 
 function applyFX() {
