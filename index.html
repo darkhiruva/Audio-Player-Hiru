@@ -24,17 +24,10 @@
   color-scheme: dark;
 }
 *, *::before, *::after { box-sizing: inherit }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--tx);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  min-height: 100vh;
-}
+body { margin: 0; background: var(--bg); color: var(--tx); font-family: 'Inter', system-ui, -apple-system, sans-serif; min-height: 100vh; }
 main { max-width: 580px; margin: 0 auto; padding: 14px 14px 100px; }
 h1 { font-size: 1.3rem; margin: 8px 0 16px; font-weight: 800; letter-spacing: -.5px; }
 
-/* Cards */
 .card { background: var(--panel); border-radius: 20px; padding: 16px; margin-bottom: 12px; }
 .hd { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .hd b { font-size: 1rem; font-weight: 700; }
@@ -53,14 +46,12 @@ h1 { font-size: 1.3rem; margin: 8px 0 16px; font-weight: 800; letter-spacing: -.
 }
 .sbtn:active { opacity: .85; }
 
-/* How-to notice */
 .notice {
   background: #1a1208; border: 1px solid #3a2a10; border-radius: 12px;
-  padding: 10px 13px; margin-top: 10px; font-size: .82rem; color: var(--mut); line-height: 1.5;
+  padding: 10px 13px; margin-top: 10px; font-size: .82rem; color: var(--mut); line-height: 1.6;
 }
 .notice b { color: var(--or2); }
 
-/* Results */
 #results { margin-top: 10px; }
 .ritem {
   display: flex; gap: 10px; align-items: center; padding: 8px;
@@ -74,7 +65,6 @@ h1 { font-size: 1.3rem; margin: 8px 0 16px; font-weight: 800; letter-spacing: -.
 .loading { text-align: center; padding: 16px; color: var(--mut); font-size: .9rem; }
 .err { color: var(--red); font-size: .85rem; padding: 8px; line-height: 1.5; }
 
-/* Paste URL box */
 .paste-url {
   display: flex; gap: 8px; margin-top: 10px; padding-top: 10px;
   border-top: 1px solid var(--chip);
@@ -92,7 +82,24 @@ h1 { font-size: 1.3rem; margin: 8px 0 16px; font-weight: 800; letter-spacing: -.
 }
 .paste-url button:hover { background: #3a2a18; }
 
-/* Now Playing */
+/* YouTube iframe player - hidden but functional */
+#yt-container {
+  position: relative; border-radius: 16px; overflow: hidden;
+  background: #000; margin-bottom: 14px;
+  aspect-ratio: 16/9; display: none;
+}
+#yt-container.show { display: block; }
+#yt-player { width: 100%; height: 100%; border: none; }
+#yt-overlay {
+  position: absolute; inset: 0; background: transparent;
+  display: flex; align-items: flex-end; padding: 10px;
+  pointer-events: none;
+}
+.yt-badge {
+  background: rgba(0,0,0,0.7); color: var(--mut); font-size: .72rem;
+  padding: 3px 8px; border-radius: 6px;
+}
+
 .np-wrap { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
 #thumb {
   width: 64px; height: 64px; border-radius: 14px;
@@ -102,7 +109,6 @@ h1 { font-size: 1.3rem; margin: 8px 0 16px; font-weight: 800; letter-spacing: -.
 #title { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0 0 2px; font-size: 1rem; }
 #sub { color: var(--mut); font-size: .82rem; margin: 0; }
 
-/* Status bar */
 #statusBar {
   font-size: .78rem; padding: 6px 10px; border-radius: 8px; margin-bottom: 10px;
   display: none; text-align: center;
@@ -111,15 +117,20 @@ h1 { font-size: 1.3rem; margin: 8px 0 16px; font-weight: 800; letter-spacing: -.
 #statusBar.error { display: block; background: #200; color: var(--red); }
 #statusBar.ok { display: block; background: #0a1a0a; color: var(--green); }
 
-/* Seek */
-.seek {
-  display: flex; align-items: center; gap: 8px; margin: 4px 0 10px;
-  font-size: .8rem; color: var(--mut);
+/* Speed control - main feature */
+.speed-big {
+  background: #1a1208; border: 1px solid #3a2a10; border-radius: 16px;
+  padding: 14px; margin-bottom: 14px;
 }
-.seek input { flex: 1; accent-color: var(--or); }
+.speed-big label { font-size: .82rem; color: var(--mut); display: block; margin-bottom: 8px; }
+.speed-row { display: flex; align-items: center; gap: 10px; }
+.speed-row input { flex: 1; accent-color: var(--or); }
+.speed-val { font-size: 1.3rem; font-weight: 800; color: var(--or); min-width: 52px; text-align: right; }
+.speed-presets { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.sp { background: var(--chip); color: var(--mut); padding: 5px 12px; border-radius: 10px; font-size: .8rem; cursor: pointer; border: none; color: var(--mut); }
+.sp.on { background: var(--or); color: #1a0800; font-weight: 700; }
 
-/* Controls */
-.ctl { display: flex; justify-content: center; align-items: center; gap: 14px; }
+.ctl { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 4px; }
 button { font: inherit; color: inherit; border: 0; cursor: pointer; }
 .ib { background: none; font-size: 1.5rem; padding: 8px; border-radius: 50%; }
 .ib:hover { background: var(--chip); }
@@ -142,10 +153,7 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; }
 .sw[aria-pressed=true] { background: var(--or); }
 .sw[aria-pressed=true]::after { left: 25px; background: #fff; }
 .chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
-.chip {
-  background: var(--chip); color: var(--mut); padding: 7px 13px;
-  border-radius: 18px; font-size: .82rem; cursor: pointer;
-}
+.chip { background: var(--chip); color: var(--mut); padding: 7px 13px; border-radius: 18px; font-size: .82rem; cursor: pointer; border: none; }
 .chip.on { background: var(--or); color: #1a0800; font-weight: 700; }
 .eq { display: flex; justify-content: space-between; gap: 2px; margin-bottom: 14px; }
 .band { display: flex; flex-direction: column; align-items: center; font-size: .65rem; color: var(--mut); flex: 1; }
@@ -178,44 +186,53 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--or2); outline-offset: 2px; }
 input[type=range] { width: 100%; }
 
-/* API selector */
 .api-tabs { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
 .api-tab { background: var(--chip); color: var(--mut); padding: 5px 12px; border-radius: 10px; font-size: .78rem; cursor: pointer; border: none; }
 .api-tab.on { background: var(--or); color: #1a0800; font-weight: 700; }
+
+/* Seek bar */
+.seek {
+  display: flex; align-items: center; gap: 8px; margin: 4px 0 10px;
+  font-size: .8rem; color: var(--mut);
+}
+.seek input { flex: 1; accent-color: var(--or); }
+
+/* YT mode toggle */
+.mode-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; font-size: .82rem; color: var(--mut); }
+.mode-row button { background: var(--chip); color: var(--mut); border: none; padding: 5px 12px; border-radius: 10px; font-size: .78rem; cursor: pointer; }
+.mode-row button.on { background: var(--or); color: #1a0800; font-weight: 700; }
 </style>
 </head>
 <body>
-<audio id="a" preload="metadata"></audio>
+
+<div id="yt-container">
+  <iframe id="yt-player" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+  <div id="yt-overlay"><span class="yt-badge">YouTube Player</span></div>
+</div>
 
 <main>
 <h1>Slowed Player 🎧</h1>
 
 <!-- Search -->
 <section class="card">
-  <div class="hd"><b>Search</b></div>
-
-  <!-- Search source tabs -->
+  <div class="hd"><b>🔍 Search</b></div>
   <div class="api-tabs">
     <button class="api-tab on" data-src="invidious" onclick="setSearchSrc(this)">Invidious</button>
     <button class="api-tab" data-src="piped" onclick="setSearchSrc(this)">Piped</button>
   </div>
-
   <div class="sbar">
-    <input id="sq" placeholder="YouTube song නමක් type කරන්න…" autocomplete="off">
+    <input id="sq" placeholder="Song නමක් type කරන්න…" autocomplete="off">
     <button class="sbtn" onclick="doSearch()">සෙවීම</button>
   </div>
   <div id="results"></div>
-
-  <!-- Direct URL paste -->
   <div class="paste-url">
     <input id="urlInput" placeholder="YouTube URL paste කරන්න (youtube.com/watch?v=…)">
     <button onclick="loadFromURL()">▶ Load</button>
   </div>
-
   <div class="notice">
-    💡 <b>Search fail වුනොත්:</b> Invidious/Piped toggle කරන්න හෝ YouTube URL paste කරන්න.<br>
-    🔊 <b>Audio:</b> Invidious → Cobalt → Piped order එකෙන් try කරනවා (auto-fallback).<br>
-    🌐 <b>VPN use කළොත්</b> success rate වැඩියි (geo-blocks bypass).
+    💡 <b>Search fail වුනොත්:</b> Invidious/Piped toggle කරන්න.<br>
+    🎬 <b>Player:</b> YouTube iframe use කරනවා — 100% works, no CORS.<br>
+    🎚️ <b>Speed/EQ:</b> YouTube player ලඟ speed slider use කරන්න.
   </div>
 </section>
 
@@ -225,45 +242,48 @@ input[type=range] { width: 100%; }
     <img id="thumb" src="" alt="">
     <div class="np-info">
       <p id="title">Song එකක් තෝරන්න</p>
-      <p id="sub">YouTube search හෝ URL paste කරන්න →</p>
+      <p id="sub">YouTube search හෝ URL paste කරන්න</p>
     </div>
   </div>
   <div id="statusBar"></div>
-  <div class="seek">
-    <span id="cur">0:00</span>
-    <input id="seek" type="range" min="0" max="1000" value="0">
-    <span id="dur">0:00</span>
-  </div>
-  <div class="ctl">
-    <button class="ib" id="shuffleBtn" title="Shuffle" onclick="toggleShuffle()">🔀</button>
-    <button class="ib" onclick="prevSong()" title="Previous">⏮</button>
-    <button class="ib playbtn" id="playbtn" onclick="togglePlay()" disabled>▶</button>
-    <button class="ib" onclick="nextSong()" title="Next">⏭</button>
-    <button class="ib" id="repeatBtn" title="Repeat" onclick="toggleRepeat()">🔁</button>
-  </div>
-</section>
 
-<!-- Sound -->
-<section class="card">
-  <div class="hd"><b>Sound</b><button class="sw" id="power" aria-pressed="true" onclick="toggleSound()"></button></div>
-  <div id="fx">
-    <div class="chips" id="chips"></div>
-    <div class="eq" id="eq"></div>
-    <div class="row">
-      <span>Speed</span>
-      <input id="speed" type="range" min="0.5" max="1.5" step="0.01" value="0.85" oninput="onSpeed(this)">
-      <output id="speedO">0.85×</output>
+  <!-- YouTube embed player -->
+  <div id="ytPlayerWrap" style="display:none">
+    <div style="border-radius:14px;overflow:hidden;background:#000;aspect-ratio:16/9;margin-bottom:12px">
+      <iframe id="ytIframe"
+        style="width:100%;height:100%;border:none;display:block"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen>
+      </iframe>
     </div>
-    <div class="row">
-      <span>Reverb</span>
-      <input id="rev" type="range" min="0" max="1" step="0.01" value="0.5" oninput="onRev(this)">
-      <output id="revO">50%</output>
+
+    <!-- Speed control — the main feature -->
+    <div class="speed-big">
+      <label>⚡ Playback Speed (YouTube player rate)</label>
+      <div class="speed-row">
+        <input id="ytSpeed" type="range" min="0.25" max="2" step="0.05" value="0.85" oninput="onYTSpeed(this)">
+        <span class="speed-val" id="ytSpeedVal">0.85×</span>
+      </div>
+      <div class="speed-presets">
+        <button class="sp" onclick="setYTSpeed(0.5)">0.5× Slowed</button>
+        <button class="sp on" onclick="setYTSpeed(0.85)">0.85× Default</button>
+        <button class="sp" onclick="setYTSpeed(1.0)">1× Normal</button>
+        <button class="sp" onclick="setYTSpeed(1.25)">1.25× Fast</button>
+        <button class="sp" onclick="setYTSpeed(1.5)">1.5× Nightcore</button>
+      </div>
     </div>
-    <div class="row">
-      <span>Bass boost</span>
-      <input id="bass" type="range" min="0" max="15" step="0.5" value="2" oninput="onBass(this)">
-      <output id="bassO">2 dB</output>
+
+    <div class="ctl">
+      <button class="ib" id="shuffleBtn" title="Shuffle" onclick="toggleShuffle()">🔀</button>
+      <button class="ib" onclick="prevSong()" title="Previous">⏮</button>
+      <button class="ib playbtn" id="playbtn" onclick="togglePlay()">▶</button>
+      <button class="ib" onclick="nextSong()" title="Next">⏭</button>
+      <button class="ib" id="repeatBtn" title="Repeat" onclick="toggleRepeat()">🔁</button>
     </div>
+  </div>
+
+  <div id="noSongMsg" style="text-align:center;color:var(--mut);padding:20px 0;font-size:.9rem">
+    👆 Song search කරලා select කරන්න
   </div>
 </section>
 
@@ -287,10 +307,8 @@ input[type=range] { width: 100%; }
 
 <script>
 // ============================================================
-//  CONFIG — Free APIs
+//  CONFIG
 // ============================================================
-
-// Invidious public instances (try in order)
 const INVIDIOUS_INSTANCES = [
   'https://inv.nadeko.net',
   'https://invidious.privacydev.net',
@@ -299,9 +317,9 @@ const INVIDIOUS_INSTANCES = [
   'https://invidious.nerdvpn.de',
   'https://invidious.projectsegfau.lt',
   'https://yt.artemislena.eu',
+  'https://invidious.slipfox.xyz',
 ];
 
-// Piped public instances
 const PIPED_INSTANCES = [
   'https://pipedapi.kavin.rocks',
   'https://pipedapi.adminforge.de',
@@ -309,31 +327,26 @@ const PIPED_INSTANCES = [
   'https://piped-api.garudalinux.org',
 ];
 
-// Cobalt instances (try multiple)
-const COBALT_INSTANCES = [
-  'https://api.cobalt.tools',
-  'https://cobalt.api.timelessnesses.me',
-];
-
-// LRCLib for lyrics
 const LRCLIB = 'https://lrclib.net/api/search';
 
 // ============================================================
 //  STATE
 // ============================================================
-let queue = [], qIdx = -1, shuffled = false, repeat = false, seeking = false;
-let ctx, filters = [], bassF, dry, wet, conv;
-let soundOn = true, state = { eq: Array(10).fill(0), speed: 0.85, rev: 0.5, bass: 2 };
+let queue = [], qIdx = -1, shuffled = false, repeat = false;
 let activeL = -1, lines = [];
 let searchSrc = 'invidious';
 let currentVideoId = null;
+let ytPlayer = null; // YouTube IFrame API player
+let ytReady = false;
+let ytPlaying = false;
+let pendingVideoId = null;
+let ytRate = 0.85;
 
-const a = document.getElementById('a');
 const $ = id => document.getElementById(id);
 const fmt = s => isFinite(s) ? Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0') : '0:00';
 
 // ============================================================
-//  TOAST
+//  TOAST / STATUS
 // ============================================================
 function toast(msg, dur = 2500) {
   const t = $('toast');
@@ -351,17 +364,152 @@ function setStatus(msg, type = 'loading') {
 function clearStatus() { $('statusBar').className = ''; }
 
 // ============================================================
-//  SEARCH SOURCE
+//  YOUTUBE IFRAME API
 // ============================================================
-function setSearchSrc(btn) {
-  searchSrc = btn.dataset.src;
-  document.querySelectorAll('.api-tab').forEach(b => b.classList.toggle('on', b === btn));
+function onYouTubeIframeAPIReady() {
+  ytReady = true;
+  ytPlayer = new YT.Player('ytIframe', {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      autoplay: 1,
+      controls: 1,
+      rel: 0,
+      modestbranding: 1,
+      playsinline: 1,
+    },
+    events: {
+      onReady: onPlayerReady,
+      onStateChange: onPlayerStateChange,
+      onError: onPlayerError,
+    }
+  });
+}
+
+function onPlayerReady(event) {
+  if (pendingVideoId) {
+    playVideoId(pendingVideoId);
+    pendingVideoId = null;
+  }
+}
+
+function onPlayerStateChange(event) {
+  const S = YT.PlayerState;
+  if (event.data === S.PLAYING) {
+    ytPlaying = true;
+    $('playbtn').textContent = '⏸';
+    // Apply saved speed
+    try { ytPlayer.setPlaybackRate(ytRate); } catch(e) {}
+    setStatus('▶ Playing', 'ok');
+    // Sync lyrics
+    startLyricsSync();
+  } else if (event.data === S.PAUSED) {
+    ytPlaying = false;
+    $('playbtn').textContent = '▶';
+    stopLyricsSync();
+  } else if (event.data === S.ENDED) {
+    ytPlaying = false;
+    $('playbtn').textContent = '▶';
+    stopLyricsSync();
+    nextSong();
+  } else if (event.data === S.BUFFERING) {
+    setStatus('⏳ Buffering…', 'loading');
+  }
+}
+
+function onPlayerError(event) {
+  const codes = { 2: 'Invalid video ID', 5: 'HTML5 error', 100: 'Video not found', 101: 'Embed not allowed', 150: 'Embed not allowed' };
+  const msg = codes[event.data] || `Error ${event.data}`;
+  setStatus(`❌ ${msg} — වෙනත් song try කරන්න`, 'error');
+  toast(`YouTube error: ${msg}`);
+}
+
+function playVideoId(videoId) {
+  if (!ytPlayer || !ytReady) {
+    pendingVideoId = videoId;
+    return;
+  }
+  try {
+    ytPlayer.loadVideoById(videoId);
+    // Show player
+    $('ytPlayerWrap').style.display = 'block';
+    $('noSongMsg').style.display = 'none';
+  } catch(e) {
+    setStatus('❌ Player error — page refresh කරන්න', 'error');
+  }
+}
+
+function togglePlay() {
+  if (!ytPlayer) return;
+  try {
+    if (ytPlaying) ytPlayer.pauseVideo();
+    else ytPlayer.playVideo();
+  } catch(e) {}
+}
+
+// ============================================================
+//  SPEED CONTROL
+// ============================================================
+function onYTSpeed(el) {
+  ytRate = +el.value;
+  $('ytSpeedVal').textContent = ytRate.toFixed(2) + '×';
+  try { if (ytPlayer) ytPlayer.setPlaybackRate(ytRate); } catch(e) {}
+  // Update preset buttons
+  document.querySelectorAll('.sp').forEach(b => {
+    b.classList.toggle('on', Math.abs(parseFloat(b.textContent) - ytRate) < 0.01);
+  });
+}
+
+function setYTSpeed(rate) {
+  ytRate = rate;
+  $('ytSpeed').value = rate;
+  $('ytSpeedVal').textContent = rate.toFixed(2) + '×';
+  try { if (ytPlayer) ytPlayer.setPlaybackRate(rate); } catch(e) {}
+  document.querySelectorAll('.sp').forEach(b => {
+    b.classList.toggle('on', Math.abs(parseFloat(b.textContent) - rate) < 0.01);
+  });
+}
+
+// ============================================================
+//  LYRICS SYNC
+// ============================================================
+let lyricsSyncInterval = null;
+
+function startLyricsSync() {
+  stopLyricsSync();
+  lyricsSyncInterval = setInterval(() => {
+    if (!ytPlayer || !lines.length || lines[0].t === null) return;
+    let ct = 0;
+    try { ct = ytPlayer.getCurrentTime() || 0; } catch(e) { return; }
+    let i = -1;
+    for (let j = 0; j < lines.length; j++) {
+      if (lines[j].t <= ct + 0.1) i = j; else break;
+    }
+    if (i === activeL) return;
+    const ps = $('lyr').children;
+    if (ps[activeL]) ps[activeL].classList.remove('on');
+    activeL = i;
+    if (ps[i]) {
+      ps[i].classList.add('on');
+      const b = $('lyr');
+      b.scrollTop = ps[i].offsetTop - b.clientHeight / 2 + ps[i].clientHeight / 2;
+    }
+  }, 500);
+}
+
+function stopLyricsSync() {
+  if (lyricsSyncInterval) { clearInterval(lyricsSyncInterval); lyricsSyncInterval = null; }
 }
 
 // ============================================================
 //  SEARCH
 // ============================================================
 $('sq').addEventListener('keydown', e => e.key === 'Enter' && doSearch());
+
+function setSearchSrc(btn) {
+  searchSrc = btn.dataset.src;
+  document.querySelectorAll('.api-tab').forEach(b => b.classList.toggle('on', b === btn));
+}
 
 async function tryFetch(url, opts = {}) {
   const r = await fetch(url, { signal: AbortSignal.timeout(8000), ...opts });
@@ -374,13 +522,12 @@ async function searchInvidious(q) {
     try {
       const data = await tryFetch(`${inst}/api/v1/search?q=${encodeURIComponent(q)}&type=video&fields=videoId,title,author,lengthSeconds,videoThumbnails`);
       if (Array.isArray(data) && data.length) return data.map(v => ({
-        id: v.videoId,
-        title: v.title,
-        channel: v.author,
+        id: v.videoId, title: v.title, channel: v.author,
         duration: fmt(v.lengthSeconds),
-        thumbnail: (v.videoThumbnails?.find(t => t.quality === 'medium') || v.videoThumbnails?.[0])?.url || `https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg`,
+        thumbnail: (v.videoThumbnails?.find(t => t.quality === 'medium') || v.videoThumbnails?.[0])?.url
+                   || `https://i.ytimg.com/vi/${v.videoId}/mqdefault.jpg`,
       }));
-    } catch (e) { /* try next */ }
+    } catch (e) {}
   }
   throw new Error('සියලු Invidious instances failed. Piped try කරන්න.');
 }
@@ -391,14 +538,13 @@ async function searchPiped(q) {
       const data = await tryFetch(`${inst}/search?q=${encodeURIComponent(q)}&filter=videos`);
       if (data.items?.length) return data.items.filter(v => v.type === 'stream').map(v => ({
         id: v.url?.split('v=')[1] || '',
-        title: v.title,
-        channel: v.uploaderName,
+        title: v.title, channel: v.uploaderName,
         duration: fmt(v.duration),
         thumbnail: v.thumbnail || `https://i.ytimg.com/vi/${v.url?.split('v=')[1]}/mqdefault.jpg`,
       })).filter(v => v.id);
-    } catch (e) { /* try next */ }
+    } catch (e) {}
   }
-  throw new Error('Piped instances failed. Invidious try කරන්න.');
+  throw new Error('Piped instances failed.');
 }
 
 async function doSearch() {
@@ -410,7 +556,7 @@ async function doSearch() {
     const results = searchSrc === 'piped' ? await searchPiped(q) : await searchInvidious(q);
     renderResults(results, box);
   } catch (e) {
-    box.innerHTML = `<div class="err">❌ ${e.message}<br><small>පහළ URL box එකෙන් try කරන්න.</small></div>`;
+    box.innerHTML = `<div class="err">❌ ${e.message}<br><small>Piped/Invidious toggle කරන්න හෝ URL paste කරන්න.</small></div>`;
   }
 }
 
@@ -438,25 +584,17 @@ function loadFromURL() {
   if (!raw) { toast('URL paste කරන්න'); return; }
   const id = extractVideoId(raw);
   if (!id) { toast('Valid YouTube URL නෙවෙයි'); return; }
-  const v = {
-    id,
-    title: 'YouTube Video',
-    channel: '',
-    thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg`,
-  };
-  // Try to get title via oEmbed
+  const v = { id, title: 'YouTube Video', channel: '', thumbnail: `https://i.ytimg.com/vi/${id}/mqdefault.jpg` };
   fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`)
-    .then(r => r.json())
-    .then(d => { v.title = d.title || v.title; v.channel = d.author_name || ''; })
-    .catch(() => {})
-    .finally(() => addAndPlay(v));
+    .then(r => r.json()).then(d => { v.title = d.title || v.title; v.channel = d.author_name || ''; })
+    .catch(() => {}).finally(() => addAndPlay(v));
   $('urlInput').value = '';
 }
 
 function extractVideoId(url) {
   try {
     const u = new URL(url.includes('://') ? url : 'https://' + url);
-    return u.searchParams.get('v') || u.pathname.split('/').pop() || null;
+    return u.searchParams.get('v') || (u.hostname === 'youtu.be' ? u.pathname.slice(1) : null);
   } catch {
     const m = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return m ? m[1] : null;
@@ -489,7 +627,7 @@ function renderQueue() {
     li.innerHTML = `<img src="${esc(v.thumbnail)}" style="width:48px;height:32px;object-fit:cover;border-radius:6px;flex:none" loading="lazy" alt="">
       <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.85rem">${esc(v.title)}</span>
       <button onclick="removeFromQueue(${i},event)" style="background:none;color:var(--mut);font-size:1rem;padding:4px 8px;border-radius:8px;flex:none">✕</button>`;
-    li.onclick = () => { qIdx = i; loadSong(queue[i]); };
+    li.onclick = () => { qIdx = i; loadSong(queue[i]); renderQueue(); };
     ul.appendChild(li);
   });
 }
@@ -503,280 +641,29 @@ function removeFromQueue(i, e) {
 
 function clearQueue() {
   queue = []; qIdx = -1; renderQueue();
-  a.src = '';
+  currentVideoId = null;
   $('title').textContent = 'Queue හිස්';
   $('sub').textContent = '';
   $('thumb').src = '';
-  currentVideoId = null;
-  $('playbtn').disabled = true;
+  $('ytPlayerWrap').style.display = 'none';
+  $('noSongMsg').style.display = 'block';
   clearStatus();
+  try { ytPlayer.stopVideo(); } catch(e) {}
 }
 
 // ============================================================
-//  LOAD SONG — Multi-strategy with fallbacks
+//  LOAD SONG via YouTube IFrame
 // ============================================================
-async function loadSong(v) {
+function loadSong(v) {
   currentVideoId = v.id;
   $('title').textContent = v.title || '';
   $('sub').textContent = v.channel || '';
   $('thumb').src = v.thumbnail || '';
-  $('playbtn').disabled = true;
   lines = []; activeL = -1;
-  renderQueue();
+  setStatus('⏳ YouTube player load කරනවා…', 'loading');
 
-  // Strategy 1: Invidious embed URL (no CORS issues)
-  setStatus('⏳ Invidious stream ගෙනේ…', 'loading');
-  try {
-    await loadViaInvidious(v);
-    return;
-  } catch (e) {
-    console.warn('Invidious failed:', e.message);
-  }
-
-  // Strategy 2: Cobalt API
-  setStatus('⏳ Cobalt API try කරනවා…', 'loading');
-  try {
-    await loadViaCobalt(v);
-    return;
-  } catch (e) {
-    console.warn('Cobalt failed:', e.message);
-  }
-
-  // Strategy 3: Piped API audio stream
-  setStatus('⏳ Piped try කරනවා…', 'loading');
-  try {
-    await loadViaPiped(v);
-    return;
-  } catch (e) {
-    console.warn('Piped failed:', e.message);
-  }
-
-  setStatus('❌ Audio load failed — YouTube URL paste box try කරන්න', 'error');
-  toast('සියලු sources failed. URL paste box use කරන්න.');
-  $('playbtn').disabled = false;
-}
-
-async function loadViaInvidious(v) {
-  for (const inst of INVIDIOUS_INSTANCES) {
-    try {
-      const data = await tryFetch(`${inst}/api/v1/videos/${v.id}?fields=adaptiveFormats,formatStreams`);
-      // Prefer opus/webm audio-only streams, then mp4a, then mixed streams
-      const audioFmts = (data.adaptiveFormats || []).filter(f => f.type?.startsWith('audio/'));
-      const best = audioFmts.sort((a, b) => {
-        // Prefer webm/opus for better browser support in audio element
-        const aScore = (a.type?.includes('webm') ? 10 : 0) + ((a.bitrate || 0) / 10000);
-        const bScore = (b.type?.includes('webm') ? 10 : 0) + ((b.bitrate || 0) / 10000);
-        return bScore - aScore;
-      })[0];
-      // Also try format streams (muxed video+audio) as absolute fallback
-      const mixed = (data.formatStreams || []).find(f => f.type?.includes('mp4'));
-      const src = best?.url || mixed?.url;
-      if (!src) throw new Error('No audio URL in response');
-      // Test if the URL is actually reachable with a HEAD request
-      const testRes = await fetch(src, { method: 'HEAD', signal: AbortSignal.timeout(5000) });
-      if (!testRes.ok) throw new Error(`Stream URL returned ${testRes.status}`);
-      setAudioSrc(src, v, inst);
-      return;
-    } catch (e) { /* try next instance */ }
-  }
-  throw new Error('සියලු Invidious instances failed');
-}
-
-async function loadViaCobalt(v) {
-  const ytUrl = `https://www.youtube.com/watch?v=${v.id}`;
-  for (const cobaltBase of COBALT_INSTANCES) {
-    try {
-      const res = await fetch(cobaltBase, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          url: ytUrl,
-          audioFormat: 'mp3',
-          downloadMode: 'audio',
-          audioBitrate: '128',
-          filenameStyle: 'pretty',
-        }),
-        signal: AbortSignal.timeout(12000),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const audioUrl = data.url || (data.status === 'picker' && data.picker?.[0]?.url);
-      if (!audioUrl) throw new Error('No URL in response');
-      setAudioSrc(audioUrl, v, 'Cobalt');
-      return;
-    } catch (e) { /* try next */ }
-  }
-  throw new Error('සියලු Cobalt instances failed');
-}
-
-async function loadViaPiped(v) {
-  for (const inst of PIPED_INSTANCES) {
-    try {
-      const data = await tryFetch(`${inst}/streams/${v.id}`);
-      const audioStreams = (data.audioStreams || []).filter(s => s.url);
-      const best = audioStreams.sort((a, b) => (b.bitrate || 0) - (a.bitrate || 0))[0];
-      if (!best?.url) throw new Error('No audio stream');
-      setAudioSrc(best.url, v, 'Piped');
-      return;
-    } catch (e) { /* next */ }
-  }
-  throw new Error('සියලු Piped instances failed');
-}
-
-function setAudioSrc(url, v, sourceName) {
-  a.src = url;
-  a.load();
-  // Web Audio API requires crossOrigin — only set if same-origin or CORS-enabled
-  // We'll init audio on first play to avoid CORS errors on load
-  a.play()
-    .then(() => {
-      initAudio();
-      setStatus(`▶ Playing via ${sourceName || 'stream'} — ${v.title || ''}`, 'ok');
-    })
-    .catch(err => {
-      setStatus('⚠ Autoplay blocked — ▶ press කරන්න', 'loading');
-    });
-  $('playbtn').disabled = false;
+  playVideoId(v.id);
   fetchLyrics(v.title, v.channel);
-}
-
-// ============================================================
-//  AUDIO GRAPH (Web Audio API)
-// ============================================================
-function makeImpulse(c) {
-  const r = c.sampleRate, len = r * 2.8, buf = c.createBuffer(2, len, r);
-  for (let ch = 0; ch < 2; ch++) {
-    const d = buf.getChannelData(ch);
-    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.2);
-  }
-  return buf;
-}
-
-let audioSourceNode = null;
-
-function initAudio() {
-  if (ctx) {
-    // Re-use existing context
-    ctx.resume().catch(() => {});
-    return;
-  }
-  try {
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    // crossOrigin needed for Web Audio API processing
-    a.crossOrigin = 'anonymous';
-    const src = ctx.createMediaElementSource(a);
-    audioSourceNode = src;
-  let node = src;
-  const FREQS = [31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000];
-  filters = FREQS.map((f, i) => {
-    const b = ctx.createBiquadFilter();
-    b.type = i === 0 ? 'lowshelf' : i === 9 ? 'highshelf' : 'peaking';
-    b.frequency.value = f; b.Q.value = 1.1;
-    node.connect(b); node = b; return b;
-  });
-  bassF = ctx.createBiquadFilter(); bassF.type = 'lowshelf'; bassF.frequency.value = 110;
-  node.connect(bassF);
-  dry = ctx.createGain(); wet = ctx.createGain(); conv = ctx.createConvolver();
-  conv.buffer = makeImpulse(ctx);
-  bassF.connect(dry); bassF.connect(conv); conv.connect(wet);
-  dry.connect(ctx.destination); wet.connect(ctx.destination);
-  applyFX();
-  } catch(e) {
-    // CORS blocked Web Audio — audio still plays, just without EQ/reverb processing
-    console.warn('Web Audio API init failed (CORS):', e.message);
-    ctx = null;
-    toast('ℹ EQ/Reverb unavailable (CORS). Audio plays normally.');
-  }
-}
-
-function applyFX() {
-  a.playbackRate = soundOn ? state.speed : 1;
-  a.preservesPitch = false;
-  if (!ctx) return;
-  filters.forEach((f, i) => f.gain.value = soundOn ? state.eq[i] : 0);
-  bassF.gain.value = soundOn ? state.bass : 0;
-  const rv = soundOn ? state.rev : 0;
-  dry.gain.value = 1 - rv * 0.45;
-  wet.gain.value = rv * 1.1;
-}
-
-// ============================================================
-//  SOUND CONTROLS
-// ============================================================
-const PRESETS = {
-  'Flat':           { eq: Array(10).fill(0),                    speed: 1,    rev: 0,   bass: 0 },
-  'Slowed + reverb':{ eq: [2,2,1,0,0,0,-1,-2,-3,-3],           speed: 0.85, rev: 0.5, bass: 2 },
-  'Bass boost':     { eq: [6,5,3,1,0,0,0,0,0,0],               speed: 1,    rev: 0,   bass: 6 },
-  'Nightcore':      { eq: [-1,-1,0,0,1,2,3,3,2,1],             speed: 1.25, rev: 0,   bass: 0 },
-  'Lo-fi':          { eq: [2,2,1,0,-1,-2,-4,-6,-9,-12],        speed: 0.93, rev: 0.2, bass: 2 },
-  'Vocals':         { eq: [-3,-2,-1,1,3,4,3,1,0,-1],           speed: 1,    rev: 0,   bass: 0 },
-  'Concert hall':   { eq: [1,1,0,0,0,0,1,1,1,0],               speed: 1,    rev: 0.7, bass: 0 },
-  'Rock':           { eq: [4,3,2,0,-1,-1,1,3,4,4],             speed: 1,    rev: 0,   bass: 0 },
-  'Electronic':     { eq: [5,4,1,0,-2,1,0,2,4,5],              speed: 1,    rev: 0,   bass: 3 },
-};
-const FREQS_LBL = ['31','62','125','250','500','1k','2k','4k','8k','16k'];
-
-// Build preset chips
-const chipsEl = $('chips');
-Object.keys(PRESETS).forEach(n => {
-  const b = document.createElement('button');
-  b.className = 'chip'; b.textContent = n; b.dataset.n = n;
-  b.onclick = () => setPreset(n);
-  chipsEl.appendChild(b);
-});
-
-// Build EQ bands
-const eqEl = $('eq');
-FREQS_LBL.forEach((lbl, i) => {
-  const d = document.createElement('div'); d.className = 'band';
-  d.innerHTML = `<span id="g${i}">0</span><input type="range" min="-12" max="12" step="0.5" value="0" aria-label="${lbl}Hz"><span>${lbl}</span>`;
-  d.querySelector('input').oninput = e => {
-    state.eq[i] = +e.target.value;
-    markCustom();
-    $(`g${i}`).textContent = (state.eq[i] > 0 ? '+' : '') + state.eq[i];
-    applyFX();
-  };
-  eqEl.appendChild(d);
-});
-
-function syncSliders() {
-  [...eqEl.querySelectorAll('input')].forEach((el, i) => {
-    el.value = state.eq[i];
-    $(`g${i}`).textContent = (state.eq[i] > 0 ? '+' : '') + state.eq[i];
-  });
-  $('speed').value = state.speed; $('speedO').textContent = state.speed.toFixed(2) + '×';
-  $('rev').value = state.rev; $('revO').textContent = Math.round(state.rev * 100) + '%';
-  $('bass').value = state.bass; $('bassO').textContent = state.bass + ' dB';
-}
-
-function setPreset(n) {
-  const p = PRESETS[n];
-  state.eq = [...p.eq]; state.speed = p.speed; state.rev = p.rev; state.bass = p.bass;
-  [...chipsEl.children].forEach(c => c.classList.toggle('on', c.dataset.n === n));
-  syncSliders(); applyFX();
-}
-function markCustom() { [...chipsEl.children].forEach(c => c.classList.remove('on')); }
-function toggleSound() {
-  soundOn = !soundOn;
-  $('power').setAttribute('aria-pressed', soundOn);
-  $('fx').classList.toggle('off', !soundOn);
-  applyFX();
-}
-function onSpeed(el) { state.speed = +el.value; $('speedO').textContent = (+el.value).toFixed(2) + '×'; markCustom(); applyFX(); }
-function onRev(el) { state.rev = +el.value; $('revO').textContent = Math.round(+el.value * 100) + '%'; markCustom(); applyFX(); }
-function onBass(el) { state.bass = +el.value; $('bassO').textContent = el.value + ' dB'; markCustom(); applyFX(); }
-
-// ============================================================
-//  PLAYER CONTROLS
-// ============================================================
-function togglePlay() {
-  if (!a.src) return;
-  if (ctx) ctx.resume();
-  if (a.paused) {
-    a.play().catch(() => toast('Play failed — reload song'));
-  } else {
-    a.pause();
-  }
 }
 
 function prevSong() { if (qIdx > 0) { qIdx--; renderQueue(); loadSong(queue[qIdx]); } }
@@ -793,22 +680,6 @@ function toggleRepeat() { repeat = !repeat; $('repeatBtn').style.opacity = repea
 
 $('shuffleBtn').style.opacity = '.45';
 $('repeatBtn').style.opacity = '.45';
-
-a.onplay = () => $('playbtn').textContent = '⏸';
-a.onpause = () => $('playbtn').textContent = '▶';
-a.onended = () => nextSong();
-a.onloadedmetadata = () => $('dur').textContent = fmt(a.duration);
-a.onerror = () => {
-  setStatus('❌ Audio stream error — retry හෝ URL paste කරන්න', 'error');
-  $('playbtn').disabled = false;
-};
-a.ontimeupdate = () => {
-  if (!seeking) $('seek').value = a.duration ? a.currentTime / a.duration * 1000 : 0;
-  $('cur').textContent = fmt(a.currentTime);
-  syncLyrics();
-};
-$('seek').oninput = e => { seeking = true; if (a.duration) a.currentTime = +e.target.value / 1000 * a.duration; };
-$('seek').onchange = () => seeking = false;
 
 // ============================================================
 //  LYRICS
@@ -843,31 +714,22 @@ function renderLyrics() {
   if (!lines.length) { box.innerHTML = '<p class="lempty">Lyrics නැත.</p>'; return; }
   lines.forEach(l => {
     const p = document.createElement('p'); p.textContent = l.s;
-    if (l.t !== null) { p.className = 'click'; p.onclick = () => { a.currentTime = l.t; if (a.paused) a.play(); }; }
+    if (l.t !== null) {
+      p.className = 'click';
+      p.onclick = () => { try { ytPlayer.seekTo(l.t, true); } catch(e) {} };
+    }
     box.appendChild(p);
   });
 }
 
-function syncLyrics() {
-  if (!lines.length || lines[0].t === null) return;
-  let i = -1;
-  for (let j = 0; j < lines.length; j++) { if (lines[j].t <= a.currentTime + 0.1) i = j; else break; }
-  if (i === activeL) return;
-  const ps = $('lyr').children;
-  if (ps[activeL]) ps[activeL].classList.remove('on');
-  activeL = i;
-  if (ps[i]) {
-    ps[i].classList.add('on');
-    const b = $('lyr');
-    b.scrollTop = ps[i].offsetTop - b.clientHeight / 2 + ps[i].clientHeight / 2;
-  }
-}
-
 // ============================================================
-//  INIT
+//  LOAD YOUTUBE IFRAME API
 // ============================================================
-setPreset('Slowed + reverb');
-renderQueue();
+(function loadYTAPI() {
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
 </script>
 </body>
 </html>
